@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190125035620) do
+ActiveRecord::Schema.define(version: 20190125040748) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,5 +25,13 @@ ActiveRecord::Schema.define(version: 20190125035620) do
   end
 
   add_index "domain_countries", ["domain", "country"], name: "index_domain_countries_on_domain_and_country", unique: true, using: :btree
+
+  create_table "websites", force: :cascade do |t|
+    t.string   "domain"
+    t.integer  "num_external_links"
+    t.integer  "num_internal_links"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
 end
