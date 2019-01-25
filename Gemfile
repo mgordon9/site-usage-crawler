@@ -17,10 +17,15 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 gem 'sidekiq'
 gem 'pg'
+gem 'nokogiri'
+gem 'rest-client'
 
 group :development, :test do
   gem 'annotate'
   gem 'pry'
+  gem 'rspec-rails'
+  gem 'webmock'
+  # gem 'rspec-sidekiq'
 end
 
 group :development do
