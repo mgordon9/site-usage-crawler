@@ -8,24 +8,18 @@ class PublisherCrawler
 
   def perform(domain)
     # TODO: handle unhandled errors
-    @domain = domain
     # TODO: parse out 'http://' and 'https://'
+    @domain = domain
     # TODO: Get usage for domain
     logger.info("Crawling domain for usage: #{domain}")
 
-
-
-    logger.info("Crawling domain for internal and external links: #{domain}")
-
-    page = retrieve_html(domain)
-    link_tags = extract_link_tags(page)
-    external_links, internal_links = seperate_external_and_internal_tags(link_tags)
-    update_website(external_links, internal_links)
+    update_domain_link_counts
   end
 
   private
 
-  def find_links
+  def update_domain_link_counts
+    logger.info("Crawling domain for internal and external links: #{domain}")
     page = retrieve_html
     link_tags = extract_link_tags(page)
     external_links, internal_links = seperate_external_and_internal_tags(link_tags)
