@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190125040748) do
+ActiveRecord::Schema.define(version: 20190125041505) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,5 +33,7 @@ ActiveRecord::Schema.define(version: 20190125040748) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "websites", ["domain"], name: "index_websites_on_domain", unique: true, using: :btree
 
 end
