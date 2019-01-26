@@ -36,7 +36,7 @@ class PublisherCrawler
     url = URI.join(DOMAIN_USAGE_URL, domain)
     page = retrieve_html(url.to_s)
     country_percentages = parse_top_country_percentages(page)
-    update_domain_countries(country_percentages)
+    update_domain_countries(country_percentages) unless country_percentages.empty?
 
     logger.info("Updated domain countries for domain: '#{domain}'")
   end
@@ -85,7 +85,6 @@ class PublisherCrawler
   end
 
   def retrieve_html(url)
-    # TODO: handle redirects
     response = RestClient.get(url)
     Nokogiri::HTML(response)
   end
