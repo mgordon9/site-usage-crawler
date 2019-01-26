@@ -27,6 +27,8 @@ Creating site-usage-crawler_sidekiq_1 ... done
 Creating site-usage-crawler_web_1     ... done
 ```
 
+Navigate to http://localhost:3000
+
 ### Access rails console
 ```sh
 docker-compose exec web rails console
