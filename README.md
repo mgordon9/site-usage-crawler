@@ -5,7 +5,7 @@ This Ruby on Rails app crawls a given domain for the number of external and inte
 ## Getting Started
 ### Prerequisites
 
-This app require docker and docker compose to set up locally. Directions to install both can be fiund here https://github.com/Yelp/docker-compose/blob/master/docs/install.md
+This app require docker and docker compose to set up locally. Directions to install both can be found here https://github.com/Yelp/docker-compose/blob/master/docs/install.md
 
 
 ### Installing
