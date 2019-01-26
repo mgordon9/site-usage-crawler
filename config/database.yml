@@ -15,7 +15,3 @@ test:
   database: site_usage_test
   user: postgres
   password: postgres
-
-# production:
-#   <<: *default
-#   database: db/production.sqlite3
