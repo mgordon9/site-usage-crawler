@@ -1,4 +1,4 @@
-# Project Title
+# Site Usage Crawler
 
 This Ruby on Rails app crawls a given domain for the number of external and internal links. It also crawls the website 'https://www.alexa.com/siteinfo/' for the top 5 countries that use that website. These two tasks utilize sidekiq for paralelism and aasymcrony. The UI will allow you to view this information for a given domain and start a background process to retrieve that information.
 
@@ -45,4 +45,4 @@ docker-compose down
 ## Built With
 
 * [Ruby on Rails](https://github.com/rails/rails) - The web framework used
-* [Sidekiq](https://github.com/mperham/sidekiq) - Dependency Management
+* [Sidekiq](https://github.com/mperham/sidekiq) - Background job framework
