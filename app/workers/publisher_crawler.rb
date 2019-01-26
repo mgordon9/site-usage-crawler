@@ -5,17 +5,30 @@ class PublisherCrawler
   LINK_TAGS = ['a', 'link'].freeze
 
   def perform(domain)
-    # TODO: handle unhandled errors
-    # TODO: parse out 'http://' and 'https://'
-    @domain = domain
-
+    parse_domain(domain)
     update_usage_statistics
     update_domain_link_counts
+  rescue => e
+    # since this can be run asyncronously, we should notify the monitoring service(bugsnag, datadog, etc)
+    # and the service that initiated this worker or any services that need to know if this worker failed.
+    # For this app, logging might be sufficient.
+    logger.fatal("Encountered unhandled exception: #{e}\n#{e.backtrace}")
+
+    # Re-raise incase we ran this syncronously and/or we want sidekiq to retry
+    raise e
   end
 
   private
 
   attr_reader :domain
+
+  def parse_domain(domain)
+    if URI(domain).host
+      @domain = URI(domain).host
+    else
+      @domain = URI("http://#{domain}").host
+    end
+  end
 
   def update_usage_statistics
     logger.info("Crawling domain for usage: '#{domain}'")

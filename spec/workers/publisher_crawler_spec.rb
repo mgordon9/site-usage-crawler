@@ -95,6 +95,32 @@ RSpec.describe PublisherCrawler do
       expect(website.num_external_links).to eq(3)
       expect(website.num_internal_links).to eq(2)
     end
+
+    context 'an unhandled exception is thrown' do
+      context 'failure in creating a domain country' do
+        it 'logs the error, re-raises, and keeps old data' do
+          create_domain_countries(domain)
+          Website.create!(domain: domain, num_external_links: 5, num_internal_links: 6)
+
+          WebMock.stub_request(:get, domain_usage_url).
+            and_return(status: 200, body: example_usage_of_domain_html)
+          WebMock.stub_request(:get, "http://#{domain}/").
+            and_return(status: 200, body: example_domain_html)
+
+          expect(DomainCountry).to receive(:create!) {raise ActiveRecord::ActiveRecordError.new}
+          expect_any_instance_of(Logger).to receive(:fatal)
+
+          expect{subject.perform(domain)}.to raise_error(ActiveRecord::ActiveRecordError)
+
+          countries = DomainCountry.where(domain: domain).pluck(:country)
+          expect(countries).to match_array(['country1', 'country2', 'country3', 'country4', 'country5'])
+
+          website = Website.find_by(domain: domain)
+          expect(website.num_external_links).to eq(5)
+          expect(website.num_internal_links).to eq(6)
+        end
+      end
+    end
   end
 
   context 'wesbite entry for the given domain DOES NOT exist' do
@@ -115,6 +141,42 @@ RSpec.describe PublisherCrawler do
       website = Website.find_by(domain: domain)
       expect(website.num_external_links).to eq(3)
       expect(website.num_internal_links).to eq(2)
+    end
+
+    context 'domain has scheme' do
+      it 'parses domain correctly' do
+        WebMock.stub_request(:get, domain_usage_url).
+          and_return(status: 200, body: example_usage_of_domain_html)
+        WebMock.stub_request(:get, "http://#{domain}/").
+          and_return(status: 200, body: example_domain_html)
+
+        expect{subject.perform(domain)}.to change{Website.count}.by(1)
+
+        countries = DomainCountry.where(domain: domain).pluck(:country)
+        expect(countries).to match_array(expected_countries)
+
+        website = Website.find_by(domain: domain)
+        expect(website.num_external_links).to eq(3)
+        expect(website.num_internal_links).to eq(2)
+      end
+    end
+
+    context 'domain does not have scheme' do
+      it 'parses the domain correctly' do
+        WebMock.stub_request(:get, domain_usage_url).
+          and_return(status: 200, body: example_usage_of_domain_html)
+        WebMock.stub_request(:get, "http://#{domain}/").
+          and_return(status: 200, body: example_domain_html)
+
+        expect{subject.perform("http://#{domain}/path/to/something")}.to change{Website.count}.by(1)
+
+        countries = DomainCountry.where(domain: domain).pluck(:country)
+        expect(countries).to match_array(expected_countries)
+
+        website = Website.find_by(domain: domain)
+        expect(website.num_external_links).to eq(3)
+        expect(website.num_internal_links).to eq(2)
+      end
     end
   end
 end
