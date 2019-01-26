@@ -2,10 +2,13 @@ default: &default
   adapter: postgresql
   pool: 5
   timeout: 5000
+  host: db
 
 development:
   <<: *default
   database: site_usage_development
+  user: postgres
+  password: postgres
 
 test:
   <<: *default
