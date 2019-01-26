@@ -4,17 +4,31 @@ class PublisherCrawler
   DOMAIN_USAGE_URL = "https://www.alexa.com/siteinfo/"
   LINK_TAGS = ['a', 'link'].freeze
 
-  attr_reader :domain
-
   def perform(domain)
     # TODO: handle unhandled errors
     # TODO: parse out 'http://' and 'https://'
     @domain = domain
 
-    # TODO: Get usage for domain
-    logger.info("Crawling domain for usage: #{domain}")
+    update_usage_statistics
+    update_domain_link_counts
+  end
+
+  private
+
+  attr_reader :domain
+
+  def update_usage_statistics
+    logger.info("Crawling domain for usage: '#{domain}'")
+
     url = URI.join(DOMAIN_USAGE_URL, domain)
     page = retrieve_html(url.to_s)
+    country_percentages = parse_top_country_percentages(page)
+    update_domain_countries(country_percentages)
+
+    logger.info("Updated domain countries for domain: '#{domain}'")
+  end
+
+  def parse_top_country_percentages(page)
     rows = parse_top_usage_country_entries(page)
     country_percentages = {}
     rows.each do |row|
@@ -22,12 +36,8 @@ class PublisherCrawler
       country_percentages[country] = parse_percentage(row)
     end
 
-    update_domain_countries(country_percentages)
-
-    update_domain_link_counts
+    country_percentages
   end
-
-  private
 
   def parse_top_usage_country_entries(page)
     page.at_css('table#demographics_div_country_table').css('tbody').css('tr')
@@ -52,10 +62,13 @@ class PublisherCrawler
 
   def update_domain_link_counts
     logger.info("Crawling domain for internal and external links: #{domain}")
+
     page = retrieve_html(domain)
     link_tags = extract_link_tags(page)
     external_links, internal_links = seperate_external_and_internal_tags(link_tags)
     update_website(external_links, internal_links)
+
+    logger.info("Updated link counts for domain: #{domain}")
   end
 
   def retrieve_html(url)
