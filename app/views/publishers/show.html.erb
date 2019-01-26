@@ -1,0 +1,39 @@
+<%= form_tag("/publishers",:method => :get) do %>
+  <%= label_tag('Enter Domain:') %>
+  <%= text_field_tag(:domain) %>
+  <%= submit_tag("View Domain",class: "btn btn-primary") %>
+<% end %>
+
+<%= form_tag("/publishers/update_publisher_data",:method => :post) do %>
+  <%= label_tag('Enter Domain:') %>
+  <%= text_field_tag(:domain) %>
+  <%= submit_tag("Update Domain",class: "btn btn-primary") %>
+<% end %>
+
+<div>
+  <%= label_tag(@domain) %>
+</div>
+
+<% if @website %>
+  <%= label_tag("Number of Internal Links: #{@website.num_internal_links}") %>
+  <%= label_tag("Number of External Links: #{@website.num_external_links}") %>
+<% end %>
+
+<% if @domain_contries %>
+  <table>
+    <thead>
+      <tr>
+        <th>Country</th>
+        <th>Percentage</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @domain_contries.each do |domain_country| %>
+        <tr>
+          <td><%= domain_country.country %></td>
+          <td><%= domain_country.percentage %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
